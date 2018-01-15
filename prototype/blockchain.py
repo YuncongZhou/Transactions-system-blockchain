@@ -1,0 +1,56 @@
+import hashlib
+import json
+from time import time
+
+class Blockchain(object):
+    """
+    It's a blockchain object implementation with all the POW features
+    """
+
+
+    def __init__(self):
+        self.chain = []
+        self.current_transactions = []
+
+        #Create the genesis block with no predecessors
+        self.new_block(previous_hash=1, proof = 100)
+
+    def new_block(self):
+        # creating a new block and append it to the blockchain
+
+        block ={
+            'index': len(self.chain+1),
+            'timestamp': time(),
+            'transactions': self.current_transactions,
+            'proof': proof,
+            'previous_hash': previous_hash or self.hash(self.chain[-1]),
+        }
+
+        #reset transactions
+        self.current_transactions = []
+        self.chain.append(block)
+        return block
+
+    def new_transaction(self):
+        # add a new transaction in temp and add it to new block later on
+
+        self.current_transactions.append({
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount
+        })
+        return self.last_block['index'] + 1
+
+
+    @staticmethod
+    def hash(block):
+        # use this hash function to chain the blocks together
+        block_string = json.dumps(block, sort_keys=True).encode()
+        return hashlib.sha256(block_string).hexdigest()
+
+    @property
+    def last_block(self):
+        # return the last block in the blockchain
+        return self.chain[-1]
+
+

@@ -3,6 +3,7 @@ import json
 from textwrap import dedent
 from time import time
 from uuid import uuid4
+from urllib.parse import urlparse
 
 from flask import Flask, jsonify, request
 
@@ -14,10 +15,22 @@ class Blockchain(object):
 
     def __init__(self):
         self.chain = []
+        self.nodes = set()
         self.current_transactions = []
 
         #Create the genesis block with no predecessors
         self.new_block(previous_hash=1, proof = 100)
+
+    def register_node(self,address):
+        """
+        Add new node to the list of nodes
+        
+        :param address: <str> 
+        :return: None
+        """
+
+        parsed_url = urlparse(address)
+        self.nodes.add(parsed_url.netloc)
 
     def new_block(self, proof, previous_hash = None):
         """
@@ -87,6 +100,35 @@ class Blockchain(object):
             proof += 1
 
         return proof
+
+    def valid_chain(self, chain):
+        """
+        Check if the input chain is valid
+        
+        :param chain: <blockchain>
+        :return: <bool>
+        """
+
+        last_block = chain[0]
+        current_index = 1
+
+        while current_index < len(chain):
+            block = chain[current_index]
+            print(f'{last_block}')
+            print(f'{block}')
+            print('----------------------')
+            #chech the hash
+            if block['previous_hash'] != self.hash(last_block):
+                return False
+            #check the proof
+            if not self.valid_proof(last_block['proof'], block['proof']):
+                return False
+
+            last_block = block
+            current_index += 1
+            
+        return True
+
 
 
     @staticmethod

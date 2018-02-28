@@ -8,6 +8,9 @@ client.on('connect',  () => {
 
 client.on('message',  (topic, message) => {
   // message is Buffer
-  console.log(message.toString())
+  // console.log(message.toString())
+  const prev = Number(message)
+  const cur = new Date().getTime()
+  console.log(`Message is ${message.toString()} , Latency is ${cur-prev} .`)
   // client.end()
 })
